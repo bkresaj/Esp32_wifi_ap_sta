@@ -1,0 +1,77 @@
+name: My Workflow
+
+on:
+  push:
+    branches: '*'
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    container:
+      image: bkresaj/my_private_repo:esp32_wifi_sta_ap_1.0
+      options: --privileged --volume ${{ github.workspace }}:/workspace --entrypoint bash
+      credentials:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD}}
+
+    env:
+      PATH: /root/esp-idf/components/espcoredump:/root/esp-idf/components/partition_table:/root/esp-idf/components/app_update:/root/esp-idf/tools/xtensa-esp-elf-gdb/11.2_20220823/xtensa-esp-elf-gdb/bin:/root/esp-idf/tools/riscv32-esp-elf-gdb/11.2_20220823/riscv32-esp-elf-gdb/bin:/root/esp-idf/tools/xtensa-esp32-elf/esp-2022r1-11.2.0/xtensa-esp32-elf/bin:/root/esp-idf/tools/xtensa-esp32s2-elf/esp-2022r1-11.2.0/xtensa-esp32s2-elf/bin:/root/esp-idf/tools/xtensa-esp32s3-elf/esp-2022r1-11.2.0/xtensa-esp32s3-elf/bin:/root/esp-idf/tools/riscv32-esp-elf/esp-2022r1-11.2.0/riscv32-esp-elf/bin:/root/esp-idf/tools/esp32ulp-elf/2.35_20220830/esp32ulp-elf/bin:/root/esp-idf/tools/openocd-esp32/v0.11.0-esp32-20221026/openocd-esp32/bin:/root/esp-idf/python_env/idf5.0_py3.12_env/bin:/root/esp-idf/tools:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        echo "Building code."
+        ./scripts/build.py
+
+  Test:
+    runs-on: ubuntu-latest
+    container:
+      image: bkresaj/my_private_repo:esp32_wifi_sta_ap_1.0
+      options: --volume ${{ github.workspace }}:/workspace
+      credentials:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD}}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Test
+      run: |
+        echo "Running unit tests."
+        cd /workspace
+        ./scripts/run_unit_tests.py
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: test_log
+        path: /workspace/tests/build/Testing/Temporary/LastTest.log
+
+  Static-analysis:
+    runs-on: ubuntu-latest
+    container:
+      image: bkresaj/my_private_repo:esp32_wifi_sta_ap_1.0
+      options: --volume ${{ github.workspace }}:/workspace
+      credentials:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD}}
+
+    env:
+      PATH: /root/esp-idf/components/espcoredump:/root/esp-idf/components/partition_table:/root/esp-idf/components/app_update:/root/esp-idf/tools/xtensa-esp-elf-gdb/11.2_20220823/xtensa-esp-elf-gdb/bin:/root/esp-idf/tools/riscv32-esp-elf-gdb/11.2_20220823/riscv32-esp-elf-gdb/bin:/root/esp-idf/tools/xtensa-esp32-elf/esp-2022r1-11.2.0/xtensa-esp32-elf/bin:/root/esp-idf/tools/xtensa-esp32s2-elf/esp-2022r1-11.2.0/xtensa-esp32s2-elf/bin:/root/esp-idf/tools/xtensa-esp32s3-elf/esp-2022r1-11.2.0/xtensa-esp32s3-elf/bin:/root/esp-idf/tools/riscv32-esp-elf/esp-2022r1-11.2.0/riscv32-esp-elf/bin:/root/esp-idf/tools/esp32ulp-elf/2.35_20220830/esp32ulp-elf/bin:/root/esp-idf/tools/openocd-esp32/v0.11.0-esp32-20221026/openocd-esp32/bin:/root/esp-idf/python_env/idf5.0_py3.12_env/bin:/root/esp-idf/tools:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Static analysis
+      run: | 
+        echo "Running static analysis."
+        ./scripts/run_cpp_checker.py
+    
+    - uses: actions/upload-artifact@v3
+      with:
+        name: cppcheck_log
+        path: /workspace/output/report.log

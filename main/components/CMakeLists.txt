@@ -1,0 +1,5 @@
+add_subdirectory(http_server)
+add_subdirectory(ntp_server)
+add_subdirectory(spiffs)
+add_subdirectory(wifi)
+add_subdirectory(wifi_manager)
