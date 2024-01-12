@@ -28,14 +28,17 @@ add_subdirectory(/root/gtest/googletest /root/gtest/googletest/build
 add_subdirectory(unit_tests)
 
 if(DEFINED COVERAGE OR DEFINED HTML_COVERAGE)
-  set(COVERAGE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/coverage")
-
-  file(MAKE_DIRECTORY ${COVERAGE_OUTPUT_DIRECTORY})
 
   if(DEFINED HTML_COVERAGE)
+    set(COVERAGE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/coverage")
+
+    file(MAKE_DIRECTORY ${COVERAGE_OUTPUT_DIRECTORY})
+
     set(GCOVR_ARGUMENTS
         --root=${PROJECT_DIRECTORY}
-        --exclude=${PROJECT_DIRECTORY}/external
+        # cmake-format: off
+        --exclude='.*.*\.h'
+        # cmake-format: on
         --exclude-directories=unit_tests/mocks/
         --html
         --html-details
@@ -45,7 +48,9 @@ if(DEFINED COVERAGE OR DEFINED HTML_COVERAGE)
   else()
     set(GCOVR_ARGUMENTS
         --root=${PROJECT_DIRECTORY}
-        --exclude=${PROJECT_DIRECTORY}/external
+        # cmake-format: off
+        --exclude='.*.*\.h'
+        # cmake-format: on
         --exclude-directories=unit_tests/mocks/
         --print-summary
         |
