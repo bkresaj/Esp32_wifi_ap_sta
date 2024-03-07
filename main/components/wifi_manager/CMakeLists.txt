@@ -7,7 +7,7 @@ add_library(${PROJECT_NAME} wifi_manager.cpp wifi_transition.cpp
 
 add_library(bkr::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC bkr::wifi bkr::http_server
+target_link_libraries(${PROJECT_NAME} PUBLIC bkr::wifi bkr::https_server
                                              idf::freertos bkr::ntp_server)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

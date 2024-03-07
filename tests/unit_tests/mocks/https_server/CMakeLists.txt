@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
-set(INTERNAL_NAME mock_http_server)
+set(INTERNAL_NAME mock_https_server)
 
-add_library(${INTERNAL_NAME} mock_http_server.cpp)
+add_library(${INTERNAL_NAME} mock_https_server.cpp)
 
 target_link_libraries(${INTERNAL_NAME} PUBLIC gmock singleton_template mock_spiffs)
 

@@ -1,27 +1,27 @@
 #pragma once
 
-#include <esp_http_server.h>
+#include <esp_https_server.h>
 #include <spiffs.h>
 
 #include <memory>
 
 /**
- * @brief The HttpServer class for managing an HTTP server.
+ * @brief The HttpsServer class for managing an HTTP server.
  *
  * This class provides functionality for starting and stopping an HTTP server,
  * retrieving Wi-Fi SSID and password information, and clearing Wi-Fi SSID and
  * password.
  */
-class HttpServer
+class HttpsServer
 {
    public:
     /**
-     * @brief Constructs an HttpServer object with the specified Spiffs
+     * @brief Constructs an HttpsServer object with the specified Spiffs
      * instance.
      *
      * @param spiffs A pointer to the Spiffs instance used by the HTTP server.
      */
-    explicit HttpServer(Spiffs* spiffs) : spiffs_(spiffs)
+    explicit HttpsServer(Spiffs* spiffs) : spiffs_(spiffs)
     {
     }
 
@@ -69,5 +69,5 @@ class HttpServer
     const std::string html_file_path_{"/spiffs/html_file"};
     static inline std::string ESP_WIFI_SSID_STA{};
     static inline std::string ESP_WIFI_PASS_STA{};
-    static inline const std::string TAG_ = "Htpp server";
+    static inline const std::string TAG_ = "Https server";
 };

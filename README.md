@@ -64,6 +64,12 @@ docker run -it --rm --privileged --device=<device_name_of_esp32_when_connected> 
 
 ### After running docker container:
 
+### Generate certificate and private key for https server:
+Note: You will need to approve a security exception in your browser. This is because of a self signed certificate; this will be always the case, unless you preload the CA root into your browser/system as trusted. In Google Chrome -> Settings -> Privacy and security -> Security -> Manage certificates -> Import certificate inside Authorities
+```bash
+openssl req -newkey rsa:2048 -nodes -keyout prvtkey.pem -x509 -days 3650 -out cacert.pem -subj "/CN=ESP32 HTTPS server example" -addext subjectAltName=IP:<IP address after connecting to esp32 AP>
+```
+
 ### Build source code:
 ```bash
 ./scripts/build.py

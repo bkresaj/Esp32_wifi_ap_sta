@@ -8,8 +8,8 @@
 Wifi::Wifi()
 {
     static Spiffs spiffs;
-    static HttpServer http_server(&spiffs);
-    http_server_ = &http_server;
+    static HttpsServer https_server(&spiffs);
+    https_server_ = &https_server;
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -78,7 +78,7 @@ bool Wifi::startAP()
     ESP_ERROR_CHECK(esp_wifi_start());
     ESP_LOGI(TAG_.data(), "wifi_init_softap finished.");
 
-    if (http_server_->startWebServer())
+    if (https_server_->startWebServer())
     {
         ESP_LOGI(TAG_.data(), "Webserver started!");
         ESP_LOGI(TAG_.data(),
@@ -109,8 +109,8 @@ bool Wifi::startSTA()
 
     wifi_config_t wifi_config = {0};
 
-    std::string ESP_WIFI_SSID_STA{http_server_->getWifiSsid()};
-    std::string ESP_WIFI_PASS_STA{http_server_->getWifiPswd()};
+    std::string ESP_WIFI_SSID_STA{https_server_->getWifiSsid()};
+    std::string ESP_WIFI_PASS_STA{https_server_->getWifiPswd()};
 
     if (ESP_WIFI_SSID_STA.size() > 0)
     {
@@ -168,7 +168,7 @@ bool Wifi::startSTA()
 
 bool Wifi::stopAP()
 {
-    if (!http_server_->stopWebServer())
+    if (!https_server_->stopWebServer())
     {
         return false;
     }
@@ -185,7 +185,7 @@ bool Wifi::stopAP()
 
 bool Wifi::stopSTA()
 {
-    http_server_->clearWifiSsidPswd();
+    https_server_->clearWifiSsidPswd();
     if (esp_wifi_disconnect() != ESP_OK)
     {
         return false;
@@ -204,13 +204,13 @@ bool Wifi::stopSTA()
 
 std::string Wifi::getWifiSsidSta()
 {
-    return http_server_->getWifiSsid();
+    return https_server_->getWifiSsid();
 }
 
 // cppcheck-suppress unusedFunction
 std::string Wifi::getWifiPasswordSta()
 {
-    return http_server_->getWifiPswd();
+    return https_server_->getWifiPswd();
 }
 
 bool Wifi::getWifiStaStatus()

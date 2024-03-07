@@ -1,4 +1,4 @@
-add_subdirectory(http_server)
+add_subdirectory(https_server)
 add_subdirectory(ntp_server)
 add_subdirectory(spiffs)
 add_subdirectory(wifi)

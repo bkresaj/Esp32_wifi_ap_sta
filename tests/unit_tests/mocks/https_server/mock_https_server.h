@@ -1,8 +1,8 @@
 #pragma once
 
-#include "http_server.h"
+#include "https_server.h"
 
-class MockHttpServer : public SingletonTemplate<MockHttpServer>
+class MockHttpsServer : public SingletonTemplate<MockHttpsServer>
 {
    public:
     MOCK_METHOD(bool, startWebServer, (), ());

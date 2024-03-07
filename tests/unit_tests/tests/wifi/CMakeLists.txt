@@ -23,7 +23,7 @@ target_link_libraries(
          mock_esp_wifi
          mock_freertos
          mock_esp_log
-         mock_http_server
+         mock_https_server
          mock_esp_netif
          mock_esp_event)
 

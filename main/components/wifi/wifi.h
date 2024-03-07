@@ -4,7 +4,7 @@
 #include "esp_wifi.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
-#include "http_server.h"
+#include "https_server.h"
 
 struct WifiConfig
 {
@@ -85,7 +85,7 @@ class Wifi
         .wifi_fail_bit = BIT1,
         .esp_wifi_scan_auth_mode_threshold = WIFI_AUTH_WPA2_PSK};
 
-    HttpServer* http_server_{nullptr};
+    HttpsServer* https_server_{nullptr};
     esp_netif_t* m_apNetif_{nullptr};
     esp_netif_t* m_staNetif_{nullptr};
     static inline EventGroupHandle_t s_wifi_event_group{};

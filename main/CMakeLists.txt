@@ -12,7 +12,7 @@ idf_build_process(
   esptool_py
   esp_wifi
   nvs_flash
-  esp_http_server
+  esp_https_server
   spiffs
   lwip
   SDKCONFIG
@@ -21,6 +21,7 @@ idf_build_process(
   ${CMAKE_BINARY_DIR})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_compile_definitions(CHAR_BIT=8)
 
 add_executable(${CMAKE_PROJECT_NAME}.elf main.cpp)
 

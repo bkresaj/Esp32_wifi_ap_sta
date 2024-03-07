@@ -1,5 +1,5 @@
 add_subdirectory(esp-idf)
-add_subdirectory(http_server)
+add_subdirectory(https_server)
 add_subdirectory(singleton_template)
 add_subdirectory(spiffs)
 add_subdirectory(stdio)

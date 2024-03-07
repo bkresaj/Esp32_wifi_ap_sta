@@ -161,7 +161,7 @@ WifiSta::WifiSta()
 {
     ESP_LOGI("WIFI_STA", "Constructor");
 
-    if (xTaskCreate(STA_task, "STA task", 4096, nullptr, 5, &STA_task_handle) !=
+    if (xTaskCreate(STA_task, "STA task", 8192, nullptr, 5, &STA_task_handle) !=
         pdPASS)
     {
         assert(!"Failed to create STA_task");

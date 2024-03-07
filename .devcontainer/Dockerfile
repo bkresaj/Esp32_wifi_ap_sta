@@ -1,7 +1,7 @@
 FROM python
 
 RUN apt-get update
-RUN apt-get -y install gdb cmake valgrind gcovr cppcheck doxygen graphviz python3 python3-pip
+RUN apt-get -y install gdb cmake valgrind gcovr cppcheck doxygen graphviz python3 python3-pip openssl
 
 RUN apt-get install -y flex bison gperf cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
 

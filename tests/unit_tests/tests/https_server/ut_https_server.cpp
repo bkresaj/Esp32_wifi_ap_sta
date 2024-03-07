@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include <http_server.h>
+#include <https_server.h>
 
 #include "esp_log.h"
-#include "mock_esp_http_server.h"
+#include "mock_esp_https_server.h"
 #include "mock_spiffs.h"
 
 using namespace testing;
@@ -11,31 +11,32 @@ class UtHttpServer : public ::Test
 {
    public:
     StrictMock<MockSpiffs> mock_spiffs;
+    StrictMock<MockEspHttpsServer> mock_esp_https_server;
     StrictMock<MockEspHttpServer> mock_esp_http_server;
 };
 
 TEST_F(UtHttpServer, startWebServerFailsWhenSpiffsPointerIsNullptr)
 {
-    HttpServer http_server(nullptr);
+    HttpsServer https_server(nullptr);
 
-    EXPECT_FALSE(http_server.startWebServer());
+    EXPECT_FALSE(https_server.startWebServer());
 }
 
 TEST_F(UtHttpServer,
        startWebServerFailsWhenSpiffsGetFileSizeReadsIncorrectLength)
 {
     Spiffs* spiffs = new Spiffs();
-    HttpServer http_server(spiffs);
+    HttpsServer https_server(spiffs);
 
     EXPECT_CALL(mock_spiffs, getFileSize(_)).WillOnce(Return(0));
 
-    EXPECT_FALSE(http_server.startWebServer());
+    EXPECT_FALSE(https_server.startWebServer());
 }
 
 TEST_F(UtHttpServer, startWebServerFailsWhenHttpdStartFails)
 {
     Spiffs* spiffs = new Spiffs();
-    HttpServer http_server(spiffs);
+    HttpsServer https_server(spiffs);
 
     InSequence s;
 
@@ -43,16 +44,16 @@ TEST_F(UtHttpServer, startWebServerFailsWhenHttpdStartFails)
 
     EXPECT_CALL(mock_spiffs, readFile(_, _)).Times(1);
 
-    EXPECT_CALL(mock_esp_http_server, httpd_start(_, _))
+    EXPECT_CALL(mock_esp_https_server, httpd_ssl_start(_, _))
         .WillOnce(Return(ESP_FAIL));
 
-    EXPECT_FALSE(http_server.startWebServer());
+    EXPECT_FALSE(https_server.startWebServer());
 }
 
 TEST_F(UtHttpServer, startWebServerSuccess)
 {
     Spiffs* spiffs = new Spiffs();
-    HttpServer http_server(spiffs);
+    HttpsServer https_server(spiffs);
 
     InSequence s;
 
@@ -60,30 +61,32 @@ TEST_F(UtHttpServer, startWebServerSuccess)
 
     EXPECT_CALL(mock_spiffs, readFile(_, _)).Times(1);
 
-    EXPECT_CALL(mock_esp_http_server, httpd_start(_, _))
+    EXPECT_CALL(mock_esp_https_server, httpd_ssl_start(_, _))
         .WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_http_server, httpd_register_uri_handler(_, _))
         .Times(2);
 
-    EXPECT_TRUE(http_server.startWebServer());
+    EXPECT_TRUE(https_server.startWebServer());
 }
 
 TEST_F(UtHttpServer, stopWebServerFailsWhenHttpdStopFails)
 {
     Spiffs* spiffs = new Spiffs();
-    HttpServer http_server(spiffs);
+    HttpsServer https_server(spiffs);
 
-    EXPECT_CALL(mock_esp_http_server, httpd_stop(_)).WillOnce(Return(ESP_FAIL));
+    EXPECT_CALL(mock_esp_https_server, httpd_ssl_stop(_))
+        .WillOnce(Return(ESP_FAIL));
 
-    EXPECT_FALSE(http_server.stopWebServer());
+    EXPECT_FALSE(https_server.stopWebServer());
 }
 
 TEST_F(UtHttpServer, stopWebServerSuccess)
 {
     Spiffs* spiffs = new Spiffs();
-    HttpServer http_server(spiffs);
+    HttpsServer https_server(spiffs);
 
-    EXPECT_CALL(mock_esp_http_server, httpd_stop(_)).WillOnce(Return(ESP_OK));
+    EXPECT_CALL(mock_esp_https_server, httpd_ssl_stop(_))
+        .WillOnce(Return(ESP_OK));
 
-    EXPECT_TRUE(http_server.stopWebServer());
+    EXPECT_TRUE(https_server.stopWebServer());
 }

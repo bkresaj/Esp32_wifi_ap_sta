@@ -4,10 +4,10 @@
 #include <mock_spiffs.h>
 #include <singleton_template.h>
 
-class HttpServer
+class HttpsServer
 {
    public:
-    HttpServer(Spiffs* spiffs);
+    HttpsServer(Spiffs* spiffs);
     bool startWebServer();
     bool stopWebServer();
     std::string getWifiSsid();

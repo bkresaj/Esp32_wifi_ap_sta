@@ -5,7 +5,7 @@
 #include "mock_esp_netif.h"
 #include "mock_esp_wifi.h"
 #include "mock_freertos.h"
-#include "mock_http_server.h"
+#include "mock_https_server.h"
 #include "wifi.h"
 
 using namespace testing;
@@ -16,7 +16,7 @@ class UtWifi : public ::Test
     StrictMock<MockEspEvent> mock_esp_event;
     StrictMock<MockFreertos> mock_freertos;
     StrictMock<MockEspWifi> mock_esp_wifi;
-    StrictMock<MockHttpServer> mock_http_server;
+    StrictMock<MockHttpsServer> mock_https_server;
     StrictMock<MockEspNetif> mock_esp_netif;
 
     void expectedInitializationFunctionsInsideStartAP()
@@ -33,8 +33,8 @@ class UtWifi : public ::Test
             .WillOnce(Return((EventGroupHandle_t)1));
         EXPECT_CALL(mock_esp_wifi, esp_netif_create_default_wifi_sta())
             .Times(1);
-        EXPECT_CALL(mock_http_server, getWifiSsid()).Times(1);
-        EXPECT_CALL(mock_http_server, getWifiPswd()).Times(1);
+        EXPECT_CALL(mock_https_server, getWifiSsid()).Times(1);
+        EXPECT_CALL(mock_https_server, getWifiPswd()).Times(1);
         EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(_)).Times(1);
         EXPECT_CALL(mock_esp_wifi, esp_wifi_set_config(_, _)).Times(1);
         EXPECT_CALL(mock_esp_wifi, esp_wifi_start()).Times(1);
@@ -62,7 +62,7 @@ TEST_F(UtWifi, wifiStartAPFailsBecauseStartWebserverFails)
 
     expectedInitializationFunctionsInsideStartAP();
 
-    EXPECT_CALL(mock_http_server, startWebServer()).WillOnce(Return(false));
+    EXPECT_CALL(mock_https_server, startWebServer()).WillOnce(Return(false));
 
     EXPECT_FALSE(Wifi::getInstance().startAP());
 }
@@ -73,7 +73,7 @@ TEST_F(UtWifi, wifiStartAPSuccess)
 
     expectedInitializationFunctionsInsideStartAP();
 
-    EXPECT_CALL(mock_http_server, startWebServer()).WillOnce(Return(true));
+    EXPECT_CALL(mock_https_server, startWebServer()).WillOnce(Return(true));
 
     EXPECT_TRUE(Wifi::getInstance().startAP());
 }
@@ -115,7 +115,7 @@ TEST_F(UtWifi, wifiStopAPFailsWhenStopWebServerFails)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, stopWebServer()).WillOnce(Return(false));
+    EXPECT_CALL(mock_https_server, stopWebServer()).WillOnce(Return(false));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).Times(0);
     EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(_)).Times(0);
 
@@ -126,7 +126,7 @@ TEST_F(UtWifi, wifiStopAPFailsWhenEspWifiStopFails)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, stopWebServer()).WillOnce(Return(true));
+    EXPECT_CALL(mock_https_server, stopWebServer()).WillOnce(Return(true));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).WillOnce(Return(ESP_FAIL));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(_)).Times(0);
 
@@ -137,7 +137,7 @@ TEST_F(UtWifi, wifiStopAPFailsWhenEspWifiSetModeFails)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, stopWebServer()).WillOnce(Return(true));
+    EXPECT_CALL(mock_https_server, stopWebServer()).WillOnce(Return(true));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(_)).WillOnce(Return(ESP_FAIL));
 
@@ -148,7 +148,7 @@ TEST_F(UtWifi, wifiStopAPSuccess)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, stopWebServer()).WillOnce(Return(true));
+    EXPECT_CALL(mock_https_server, stopWebServer()).WillOnce(Return(true));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(_)).WillOnce(Return(ESP_OK));
 
@@ -159,7 +159,7 @@ TEST_F(UtWifi, wifiStopSTAFailsWhenEspWifiDisconnectFails)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, clearWifiSsidPswd()).Times(1);
+    EXPECT_CALL(mock_https_server, clearWifiSsidPswd()).Times(1);
     EXPECT_CALL(mock_esp_wifi, esp_wifi_disconnect())
         .WillOnce(Return(ESP_FAIL));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).Times(0);
@@ -173,7 +173,7 @@ TEST_F(UtWifi, wifiStopSTAFailsWhenEspWifiStopFails)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, clearWifiSsidPswd()).Times(1);
+    EXPECT_CALL(mock_https_server, clearWifiSsidPswd()).Times(1);
     EXPECT_CALL(mock_esp_wifi, esp_wifi_disconnect()).WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).WillOnce(Return(ESP_FAIL));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(WIFI_MODE_NULL)).Times(0);
@@ -186,7 +186,7 @@ TEST_F(UtWifi, wifiStopSTAFailsWhenEspWifiSetModeFails)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, clearWifiSsidPswd()).Times(1);
+    EXPECT_CALL(mock_https_server, clearWifiSsidPswd()).Times(1);
     EXPECT_CALL(mock_esp_wifi, esp_wifi_disconnect()).WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(WIFI_MODE_NULL))
@@ -200,7 +200,7 @@ TEST_F(UtWifi, wifiStopSTASuccess)
 {
     InSequence s;
 
-    EXPECT_CALL(mock_http_server, clearWifiSsidPswd()).Times(1);
+    EXPECT_CALL(mock_https_server, clearWifiSsidPswd()).Times(1);
     EXPECT_CALL(mock_esp_wifi, esp_wifi_disconnect()).WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_stop()).WillOnce(Return(ESP_OK));
     EXPECT_CALL(mock_esp_wifi, esp_wifi_set_mode(WIFI_MODE_NULL))
